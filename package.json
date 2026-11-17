@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "tsx src/sim/check.ts"
+    "test": "tsx src/sim/check.ts && tsx src/sim/io-check.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

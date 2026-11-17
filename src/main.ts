@@ -2,6 +2,7 @@ import { DEFAULT_PARAMS, type Params } from './sim/simulation';
 import type { Snapshot, ToWorker } from './sim/worker';
 import { Renderer } from './render';
 import { Chart } from './chart';
+import { parseParmConf, toXYZ, toStats, download, type Frame } from './io';
 
 const FIELDS: { key: keyof Params; label: string; step: string }[] = [
   { key: 'n', label: 'n (N = n³)', step: '1' },
@@ -32,6 +33,9 @@ const chart = new Chart($<HTMLCanvasElement>('chart'));
 let worker: Worker | null = null;
 let latest: Snapshot | null = null;
 let running = true;
+const MAX_FLOATS = 50_000_000; // limit pamięci nagrania
+let frames: Frame[] = [];
+let floats = 0;
 
 const send = (m: ToWorker) => worker?.postMessage(m);
 
@@ -41,10 +45,19 @@ function start() {
   inputs.get('n')!.value = String(params.n);
   worker?.terminate();
   worker = new Worker(new URL('./sim/worker.ts', import.meta.url), { type: 'module' });
-  worker.onmessage = (e: MessageEvent<Snapshot>) => { latest = e.data; chart.push(e.data.stats); };
+  worker.onmessage = (e: MessageEvent<Snapshot>) => {
+    latest = e.data;
+    chart.push(e.data.stats);
+    const f = e.data;
+    if (floats + 4 * f.ekin.length < MAX_FLOATS) {
+      frames.push({ pos: f.pos.slice(), ekin: f.ekin.slice(), stats: f.stats });
+      floats += 4 * f.ekin.length;
+    }
+  };
   renderer.setAtoms(params.n ** 3, 0.08);
   renderer.setWall(params.L);
   chart.clear();
+  frames = []; floats = 0;
   latest = null;
   send({ type: 'init', params });
   send({ type: 'spf', value: Number($<HTMLInputElement>('spf').value) });
@@ -52,6 +65,17 @@ function start() {
 }
 
 $('reset').onclick = start;
+$('xyz').onclick = () => download('dat.xyz', toXYZ(frames));
+$('stats-dl').onclick = () => download('stats.tsv', toStats(frames));
+$('load').onclick = () => $<HTMLInputElement>('file').click();
+$<HTMLInputElement>('file').onchange = async (e) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  const prm = parseParmConf(await file.text());
+  for (const [k, v] of Object.entries(prm)) inputs.get(k as keyof Params)!.value = String(v);
+  (e.target as HTMLInputElement).value = '';
+  start();
+};
 $('toggle').onclick = () => {
   running = !running;
   $('toggle').textContent = running ? 'Pauza' : 'Start';
