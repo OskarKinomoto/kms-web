@@ -11,3 +11,5 @@ Uruchomienie: `source ~/.nvm/nvm.sh && nvm use && npm i && npm run dev`. Test za
 Parametry (n, T₀, τ, a, L, f, ε) edytowalne w panelu; Reset przelicza od nowa.
 
 Import/eksport: „Wczytaj parm.conf” (klucze n, f, L, tau, T_o, a), „Zapisz .xyz” (format jmol, jak `dat.xyz` w oryginale), „Zapisz stats” (TSV: t H V T P Ekin). Nagranie klatek jest ograniczone limitem pamięci.
+
+Deploy na GitHub Pages: `./deploy.sh` (build + push na gałąź gh-pages).
