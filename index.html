@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KMS-1 Web – symulacja argonu</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0b0e14; color: #d6dbe5; font: 13px/1.4 system-ui, sans-serif; overflow: hidden; }
+    #view { position: fixed; inset: 0; }
+    #panel { position: fixed; top: 12px; left: 12px; width: 230px; padding: 12px; background: #131824e6; border: 1px solid #263046; border-radius: 8px; }
+    #panel h1 { font-size: 14px; margin: 0 0 8px; }
+    #panel label { display: grid; grid-template-columns: 1fr 80px; gap: 6px; margin: 4px 0; align-items: center; }
+    #panel input { width: 100%; box-sizing: border-box; background: #0b0e14; color: inherit; border: 1px solid #263046; border-radius: 4px; padding: 2px 4px; }
+    #panel button { margin: 8px 6px 0 0; padding: 4px 10px; background: #263046; color: inherit; border: 0; border-radius: 4px; cursor: pointer; }
+    #panel .row { margin-top: 6px; }
+    #stats { position: fixed; top: 12px; right: 12px; padding: 10px 12px; background: #131824e6; border: 1px solid #263046; border-radius: 8px; font-variant-numeric: tabular-nums; white-space: pre; }
+    #chart { position: fixed; right: 12px; bottom: 12px; width: 360px; height: 160px; background: #131824e6; border: 1px solid #263046; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div id="view"></div>
+  <div id="panel">
+    <h1>KMS-1 · argon</h1>
+    <div id="fields"></div>
+    <button id="toggle">Pauza</button><button id="reset">Reset</button>
+    <div class="row"><label>kroków / klatkę <input id="spf" type="number" value="20" min="1" step="1" /></label></div>
+    <div class="row"><label>kula (ściana) <input id="wall" type="checkbox" checked /></label></div>
+  </div>
+  <div id="stats"></div>
+  <canvas id="chart" width="720" height="320"></canvas>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
